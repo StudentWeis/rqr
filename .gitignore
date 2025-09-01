@@ -1,0 +1,33 @@
+# Rust
+/target/
+Cargo.lock
+
+# Image
+*.png
+*.jpg
+*.jpeg
+*.svg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Backup files
+*~
+*.bak
+
+# Examples output (keep the directory but not the encoded files)
+examples/*.png
+examples/*.jpg
+examples/*.jpeg
+examples/*.svg
+!examples/.gitkeep
