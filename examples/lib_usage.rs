@@ -1,35 +1,33 @@
-use rqr::{QrDecoder, QrEncoder, Result};
-use std::path::Path;
+//! # rqr Library Usage Example
+//!
+//! This example demonstrates how to use the rqr library's public API
+//! for encoding and decoding QR codes programmatically.
+//!
+//! The example shows:
+//! - Basic QR code encoding and saving to file
+//! - Terminal display of QR codes
+//! - Decoding QR codes from image files
+
+use rqr::{encode, decode, Result};
+use std::path::PathBuf;
 
 fn main() -> Result<()> {
     println!("rqr Library Usage Example");
     println!("=========================");
 
-    // 创建编码器
-    let encoder = QrEncoder::new(200, 10, "M")?;
-
-    // 生成二维码
+    // Generate a QR code and save it to a file
     let content = "Library Example - 库使用示例";
-    let qr_code = encoder.encode(content)?;
-
-    // 保存为文件
-    let output_path = Path::new("examples/lib-example.png");
-    encoder.save_to_file(&qr_code, output_path)?;
+    let output_path = PathBuf::from("examples/lib-example.png");
+    encode(content.to_string(), output_path.clone(), 200, "M".to_string(), 10, false)?;
     println!("✅ Encoded QR code: {}", output_path.display());
 
-    // 在终端显示
+    // Generate a QR code for terminal display
     println!("\n📟 Terminal output:");
-    let terminal_output = encoder.to_terminal_string(&qr_code);
-    println!("{}", terminal_output);
+    encode("Terminal Example".to_string(), PathBuf::from("dummy.png"), 200, "M".to_string(), 10, true)?;
 
-    // 解析二维码
+    // Decode the QR code from the saved file
     println!("\n🔍 Decoding the encoded QR code:");
-    let decoder = QrDecoder::new();
-    let decoded_content = decoder.decode_from_file(output_path)?;
-
-    for (i, content) in decoded_content.iter().enumerate() {
-        println!("QR Code #{}: {}", i + 1, content);
-    }
+    decode(output_path)?;
 
     Ok(())
 }

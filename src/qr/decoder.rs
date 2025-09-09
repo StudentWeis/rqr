@@ -3,19 +3,57 @@ use image::{open as open_image, DynamicImage};
 use rqrr::PreparedImage;
 use std::path::Path;
 
+/// QR Code decoder for extracting text from images
+///
+/// The `QrDecoder` handles the detection and decoding of QR codes
+/// from image files. It supports various image formats and can
+/// detect multiple QR codes in a single image.
 #[derive(Default)]
 pub struct QrDecoder;
 
 impl QrDecoder {
+    /// Create a new QR decoder
+    ///
+    /// # Returns
+    /// Returns a configured `QrDecoder`
+    ///
+    /// # Examples
+    /// ```rust
+    /// let decoder = QrDecoder::new();
+    /// ```
     pub fn new() -> Self {
         Self
     }
 
+    /// Decode QR codes from an image file
+    ///
+    /// # Arguments
+    /// * `path` - Path to the image file
+    ///
+    /// # Returns
+    /// Returns a vector of decoded strings, or an error if decoding fails
+    ///
+    /// # Examples
+    /// ```rust,no_run
+    /// let decoder = QrDecoder::new();
+    /// let contents = decoder.decode_from_file("qr_code.png")?;
+    /// for content in contents {
+    ///     println!("Decoded: {}", content);
+    /// }
+    /// # Ok::<(), rqr::RqrError>(())
+    /// ```
     pub fn decode_from_file<P: AsRef<Path>>(&self, path: P) -> Result<Vec<String>> {
         let img = open_image(path)?;
         self.decode_from_image(img)
     }
 
+    /// Decode QR codes from an image buffer
+    ///
+    /// # Arguments
+    /// * `img` - The image to decode
+    ///
+    /// # Returns
+    /// Returns a vector of decoded strings, or an error if decoding fails
     pub fn decode_from_image(&self, img: DynamicImage) -> Result<Vec<String>> {
         // Convert to grayscale
         let luma_img = img.to_luma8();

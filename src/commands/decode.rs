@@ -2,6 +2,26 @@ use crate::qr::decoder::QrDecoder;
 use crate::utils::error::Result;
 use std::path::PathBuf;
 
+/// Run the decode command to extract text from a QR code image
+///
+/// This function handles the complete QR code decoding workflow:
+/// 1. Creates a QR decoder
+/// 2. Loads and processes the image file
+/// 3. Extracts and displays the decoded content
+///
+/// # Arguments
+/// * `input` - Path to the image file containing the QR code
+///
+/// # Returns
+/// Returns `Ok(())` on success, or an error if decoding fails
+///
+/// # Examples
+/// ```rust,no_run
+/// use std::path::PathBuf;
+///
+/// run(PathBuf::from("qr_code.png"))?;
+/// # Ok::<(), rqr::RqrError>(())
+/// ```
 pub fn run(input: PathBuf) -> Result<()> {
     let decoder = QrDecoder::new();
 

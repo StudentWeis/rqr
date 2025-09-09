@@ -1,24 +1,23 @@
+//! # rqr - QR Code CLI Tool
+//!
+//! Command-line interface for the rqr QR code library.
+//! Provides easy-to-use commands for encoding and decoding QR codes.
+
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
-mod commands;
-mod qr;
-mod utils;
+use rqr::{Result, decode, encode};
 
-use commands::{decode, encode};
-use utils::error::Result;
-
-
+/// Main CLI structure for the rqr tool
 #[derive(Parser)]
-#[command(name = "rqr")]
-#[command(about = "A CLI tool for encoding/decoding QR Code")]
-#[command(version = "0.1.0")]
+#[command(name = "rqr", version, about, long_about = None)]
 #[command(disable_help_subcommand = true)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
 }
 
+/// Available subcommands
 #[derive(Subcommand)]
 enum Commands {
     /// Encode a QR code from text
@@ -60,10 +59,10 @@ fn main() -> Result<()> {
             margin,
             terminal,
         } => {
-            encode::run(content, output, size, error_correction, margin, terminal)?;
+            encode(content, output, size, error_correction, margin, terminal)?;
         }
         Commands::Decode { input } => {
-            decode::run(input)?;
+            decode(input)?;
         }
     }
 

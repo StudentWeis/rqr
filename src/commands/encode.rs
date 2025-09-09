@@ -3,6 +3,38 @@ use crate::qr::output::OutputFormat;
 use crate::utils::error::Result;
 use std::path::PathBuf;
 
+/// Run the encode command to generate a QR code
+///
+/// This function handles the complete QR code encoding workflow:
+/// 1. Creates a QR encoder with specified parameters
+/// 2. Encodes the content into a QR code
+/// 3. Outputs the result to file or terminal
+///
+/// # Arguments
+/// * `content` - The text content to encode
+/// * `output` - Path where to save the QR code image
+/// * `size` - Size of the output image in pixels
+/// * `error_correction` - Error correction level ("L", "M", "Q", "H")
+/// * `margin` - Margin around the QR code in modules
+/// * `terminal` - If true, display in terminal instead of saving to file
+///
+/// # Returns
+/// Returns `Ok(())` on success, or an error if encoding fails
+///
+/// # Examples
+/// ```rust,no_run
+/// use std::path::PathBuf;
+///
+/// run(
+///     "Hello World".to_string(),
+///     PathBuf::from("hello.png"),
+///     200,
+///     "M".to_string(),
+///     10,
+///     false
+/// )?;
+/// # Ok::<(), rqr::RqrError>(())
+/// ```
 pub fn run(
     content: String,
     output: PathBuf,

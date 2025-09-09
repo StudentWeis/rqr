@@ -3,6 +3,10 @@ use image::{DynamicImage, ImageBuffer, Luma};
 use qrcode::{EcLevel, QrCode};
 use std::path::Path;
 
+/// QR Code encoder with configurable parameters
+///
+/// The `QrEncoder` handles the creation and rendering of QR codes.
+/// It supports various output formats and customization options.
 pub struct QrEncoder {
     size: u32,
     margin: u32,
@@ -10,6 +14,21 @@ pub struct QrEncoder {
 }
 
 impl QrEncoder {
+    /// Create a new QR encoder with specified parameters
+    ///
+    /// # Arguments
+    /// * `size` - The size of the output image in pixels
+    /// * `margin` - The margin around the QR code in modules
+    /// * `error_correction` - Error correction level ("L", "M", "Q", "H")
+    ///
+    /// # Returns
+    /// Returns a configured `QrEncoder` or an error for invalid parameters
+    ///
+    /// # Examples
+    /// ```rust
+    /// let encoder = QrEncoder::new(200, 10, "M")?;
+    /// # Ok::<(), rqr::RqrError>(())
+    /// ```
     pub fn new(size: u32, margin: u32, error_correction: &str) -> Result<Self> {
         let ec_level = match error_correction.to_uppercase().as_str() {
             "L" => EcLevel::L,
@@ -30,11 +49,32 @@ impl QrEncoder {
         })
     }
 
+    /// Encode text content into a QR code
+    ///
+    /// # Arguments
+    /// * `content` - The text to encode
+    ///
+    /// # Returns
+    /// Returns a `QrCode` structure or an error if encoding fails
+    ///
+    /// # Examples
+    /// ```rust
+    /// let encoder = QrEncoder::new(200, 10, "M")?;
+    /// let qr_code = encoder.encode("Hello, World!")?;
+    /// # Ok::<(), rqr::RqrError>(())
+    /// ```
     pub fn encode(&self, content: &str) -> Result<QrCode> {
         QrCode::with_error_correction_level(content, self.error_correction)
             .map_err(|e| RqrError::EncodingError(e.to_string()))
     }
 
+    /// Convert a QR code to an image
+    ///
+    /// # Arguments
+    /// * `qr_code` - The QR code to render
+    ///
+    /// # Returns
+    /// Returns a `DynamicImage` or an error if rendering fails
     pub fn to_image(&self, qr_code: &QrCode) -> Result<DynamicImage> {
         // Get the QR code as a vector of colors
         let qr_matrix = qr_code.to_colors();
