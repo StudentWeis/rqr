@@ -4,11 +4,12 @@
 
 一个简洁、快速的二维码生成和解析工具，同时提供 Rust 库供其他项目使用。
 
-## ✨ 特性
+# ✨ 特性
 
 - **双重用途**：既是命令行工具，也是 Rust 库
 - **功能完善**：支持二维码生成与解析，多种图片格式
 - **终端显示**：可以直接在终端中显示二维码
+- **网络支持**：支持从 URL 直接解析二维码
 - **高度可定制**：自定义尺寸、错误纠正级别、边距等参数
 - **库 API**：提供简洁的库接口，易于集成
 
@@ -39,8 +40,6 @@ rqr = { git = "https://github.com/StudentWeis/rqr" }
 
 ## 从脚本安装
 
-
-
 ## 🚀 使用方法
 
 ### 命令行工具
@@ -68,6 +67,9 @@ rqr encode "https://rust-lang.org" \
 # 从图片文件解析二维码
 rqr decode qr-image.png
 
+# 从网络 URL 解析二维码
+rqr decode "https://example.com/qr-code.png"
+
 # 解析刚生成的二维码
 rqr decode hello.png
 ```
@@ -91,7 +93,10 @@ fn main() -> Result<()> {
     )?;
 
     // 从文件解析二维码
-    decode("hello.png".into())?;
+    decode("hello.png".to_string())?;
+
+    // 从 URL 解析二维码
+    decode("https://example.com/qr-code.png".to_string())?;
 
     Ok(())
 }
@@ -114,7 +119,7 @@ fn main() -> Result<()> {
     )?;
 
     // 解析多个二维码
-    decode("multi_qr.png".into())?;
+    decode("multi_qr.png".to_string())?;
 
     Ok(())
 }
@@ -173,6 +178,14 @@ rqr encode "快速测试" --terminal
 rqr encode "重要信息" --error-correction H --output important.png
 ```
 
+### 6. 从网络解析二维码
+
+```bash
+# 从网络图片直接解析二维码
+rqr encode "网络测试" --output test.png
+rqr decode "https://example.com/test.png"
+```
+
 ## 🛠️ 技术栈
 
 - **[clap](https://crates.io/crates/clap)** - 命令行参数解析
@@ -180,7 +193,6 @@ rqr encode "重要信息" --error-correction H --output important.png
 - **[rqrr](https://crates.io/crates/rqrr)** - 二维码识别
 - **[image](https://crates.io/crates/image)** - 图像处理
 - **[thiserror](https://crates.io/crates/thiserror)** - 错误处理
-- **[anyhow](https://crates.io/crates/anyhow)** - 错误上下文
 
 ## 🧪 测试
 
@@ -193,6 +205,9 @@ cargo run -- encode "测试内容" --output test.png
 
 # 解析测试二维码
 cargo run -- decode test.png
+
+# 从 URL 解析测试二维码
+cargo run -- decode "https://example.com/test.png"
 ```
 
 ## 🔧 开发
@@ -209,6 +224,10 @@ cargo build
 
 # 运行开发版本
 cargo run -- encode "开发测试" --terminal
+
+# 测试解码功能
+cargo run -- decode "test.png"
+cargo run -- decode "https://example.com/qr.png"
 ```
 
 ### 项目结构
@@ -252,8 +271,8 @@ rqr/
 
 ## 📝 TODO
 
-- [ ] 压缩可执行文件大小
-- [ ] 支持处理图片链接
+- [x] 压缩可执行文件大小
+- [x] 支持处理图片链接
 - [ ] 自定义颜色主题
 - [ ] Logo 嵌入功能
 - [ ] 更多输出格式（PDF、JPEG 等）

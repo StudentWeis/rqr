@@ -44,5 +44,10 @@ echo "解析中文二维码:"
 ./target/debug/rqr decode examples/chinese.png
 echo ""
 
+echo "6. 从 URL 解析二维码..."
+echo "解析网络图片中的二维码:"
+./target/debug/rqr decode "https://s2.loli.net/2025/09/10/mv4ewox82dHQLYV.png"
+echo ""
+
 echo "=== 所有示例完成 ==="
 echo "生成的文件位于 examples/ 目录中"

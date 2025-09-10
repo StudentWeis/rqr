@@ -29,7 +29,10 @@
 //! )?;
 //!
 //! // Decode a QR code from file
-//! decode("hello.png".into())?;
+//! decode("hello.png".to_string())?;
+//!
+//! // Decode a QR code from URL
+//! decode("https://example.com/qr.png".to_string())?;
 //! # Ok::<(), rqr::RqrError>(())
 //! ```
 //!

@@ -40,10 +40,10 @@ enum Commands {
         #[arg(short, long)]
         terminal: bool,
     },
-    /// Decode a QR code from an image file
+    /// Decode a QR code from an image file or URL
     Decode {
-        /// Path to the image file
-        input: PathBuf,
+        /// Path to the image file or URL
+        input: String,
     },
 }
 

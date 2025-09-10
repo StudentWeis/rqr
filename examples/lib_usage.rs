@@ -7,6 +7,7 @@
 //! - Basic QR code encoding and saving to file
 //! - Terminal display of QR codes
 //! - Decoding QR codes from image files
+//! - Decoding QR codes from URLs
 
 use rqr::{encode, decode, Result};
 use std::path::PathBuf;
@@ -27,7 +28,11 @@ fn main() -> Result<()> {
 
     // Decode the QR code from the saved file
     println!("\n🔍 Decoding the encoded QR code:");
-    decode(output_path)?;
+    decode(output_path.to_string_lossy().to_string())?;
+
+    // Decode a QR code from a URL
+    println!("\n🌐 Decoding QR code from URL:");
+    decode("https://s2.loli.net/2025/09/10/mv4ewox82dHQLYV.png".to_string())?;
 
     Ok(())
 }

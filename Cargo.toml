@@ -11,12 +11,6 @@ repository = "https://github.com/StudentWeis/rqr"
 keywords = ["qr", "qrcode", "cli", "encoder", "decoder"]
 categories = ["command-line-utilities", "multimedia::images"]
 
-[package.metadata.wix]
-upgrade-guid = "6C531404-5511-4E28-BB76-D668D14B6D7C"
-path-guid = "0BDDC3F6-D27F-4D69-BFF7-D65958135B65"
-license = false
-eula = false
-
 [[bin]]
 name = "rqr"
 path = "src/main.rs"
@@ -26,11 +20,16 @@ clap = { version = "4.5.47", features = ["derive"] }
 qrcode = "0.14"
 image = "0.25.8"
 rqrr = "0.10.0"
-anyhow = "1.0"
-thiserror = "2.0"
+thiserror = "2"
 hex = "0.4"
+reqwest = { version = "0.12", features = ["blocking"] }
 
-# The profile that 'dist' will build with
 [profile.dist]
 inherits = "release"
 lto = "thin"
+
+[package.metadata.wix]
+upgrade-guid = "6C531404-5511-4E28-BB76-D668D14B6D7C"
+path-guid = "0BDDC3F6-D27F-4D69-BFF7-D65958135B65"
+license = false
+eula = false

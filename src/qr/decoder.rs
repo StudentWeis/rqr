@@ -1,5 +1,5 @@
 use crate::utils::error::{Result, RqrError};
-use image::{open as open_image, DynamicImage};
+use image::{DynamicImage, open as open_image};
 use rqrr::PreparedImage;
 use std::path::Path;
 
@@ -23,6 +23,18 @@ impl QrDecoder {
     /// ```
     pub fn new() -> Self {
         Self
+    }
+
+    /// Decode QR codes from an image url
+    pub fn decode_from_url(&self, url: &str) -> Result<Vec<String>> {
+        let resp = reqwest::blocking::get(url).map_err(|e| {
+            RqrError::DecodingError(format!("Failed to fetch image from URL: {}", e))
+        })?;
+        let bytes = resp.bytes().map_err(|e| {
+            RqrError::DecodingError(format!("Failed to read image bytes from response: {}", e))
+        })?;
+        let img = image::load_from_memory(&bytes)?;
+        self.decode_from_image(img)
     }
 
     /// Decode QR codes from an image file
