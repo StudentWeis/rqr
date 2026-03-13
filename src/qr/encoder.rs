@@ -1,7 +1,9 @@
-use crate::utils::error::{Result, RqrError};
+use std::path::Path;
+
 use image::{DynamicImage, ImageBuffer, Luma};
 use qrcode::{EcLevel, QrCode};
-use std::path::Path;
+
+use crate::utils::error::{Result, RqrError};
 
 /// QR Code encoder with configurable parameters
 ///
@@ -147,8 +149,9 @@ impl QrEncoder {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use tempfile::TempDir;
+
+    use super::*;
 
     #[test]
     fn test_encoder_new_with_valid_levels() {

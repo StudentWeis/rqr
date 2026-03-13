@@ -1,7 +1,9 @@
-use crate::qr::encoder::QrEncoder;
-use crate::qr::output::OutputFormat;
-use crate::utils::error::Result;
 use std::path::PathBuf;
+
+use crate::{
+    qr::{encoder::QrEncoder, output::OutputFormat},
+    utils::error::Result,
+};
 
 /// Run the encode command to generate a QR code
 ///
@@ -78,8 +80,9 @@ pub fn run(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use tempfile::TempDir;
+
+    use super::*;
 
     #[test]
     #[allow(clippy::unwrap_used)]

@@ -1,46 +1,56 @@
-# rqr - QR Code CLI Tool
+<h2 align="center"><em>
+  <strong>rqr：Rust QR</strong>
+</em></h2>
 
-[![Rust](https://img.shields.io/badge/language-Rust-orange.svg)](https://www.rust-lang.org) [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
+<p align="center">
+A fast and lightweight QR code CLI tool written in Rust
+</p>
 
-一个简洁、快速的二维码生成和解析命令行工具。
+<p align="center">
+  <a href="https://www.rust-lang.org"><img src="https://img.shields.io/badge/language-Rust-orange.svg" alt="Rust"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+  <a href="https://github.com/StudentWeis/rqr/releases"><img src="https://img.shields.io/github/v/release/StudentWeis/rqr" alt="Release"></a>
+</p>
 
-# ✨ 特性
+## Overview
 
-- **功能完善**：支持二维码生成与解析，多种图片格式
-- **终端显示**：可以直接在终端中显示二维码
-- **网络支持**：支持从 URL 直接解析二维码
-- **高度可定制**：自定义尺寸、错误纠正级别、边距等参数
+`rqr` is a command-line tool for encoding and decoding QR codes. It supports generating QR codes as PNG images or displaying them directly in the terminal, as well as decoding QR codes from local files or network URLs.
 
-# 安装
+## Features
 
-## 从源码编译
+- **Encode & Decode**: Full support for QR code generation and recognition
+- **Terminal Display**: Render QR codes directly in the terminal using ASCII art
+- **Network Support**: Decode QR codes from remote URLs
+- **Configurable**: Customize size, error correction level, and margin
+- **Fast & Lightweight**: Built with Rust for optimal performance
+
+## Installation
+
+### From Source
 
 ```bash
-# 克隆项目
 git clone https://github.com/StudentWeis/rqr.git
 cd rqr
-
-# 编译项目
 cargo build --release
-
-# 安装到系统路径（可选）
 cargo install --path .
 ```
 
-## 🚀 使用方法
+### Pre-built Binaries
 
-### 命令行工具
+Download pre-built binaries from the [Releases](https://github.com/StudentWeis/rqr/releases) page.
 
-#### 生成二维码
+## Usage
+
+### Generate QR Code
 
 ```bash
-# 基本用法 - 生成并保存为 PNG 文件
+# Save as PNG file
 rqr encode "Hello, World!" --output hello.png
 
-# 在终端中显示二维码
-rqr encode "终端显示测试" --terminal
+# Display in terminal
+rqr encode "Terminal test" --terminal
 
-# 自定义参数生成
+# With custom parameters
 rqr encode "https://rust-lang.org" \
   --output rust.png \
   --size 300 \
@@ -48,182 +58,97 @@ rqr encode "https://rust-lang.org" \
   --margin 5
 ```
 
-#### 解析二维码
+### Decode QR Code
 
 ```bash
-# 从图片文件解析二维码
+# From local file
 rqr decode qr-image.png
 
-# 从网络 URL 解析二维码
+# From network URL
 rqr decode "https://example.com/qr-code.png"
-
-# 解析刚生成的二维码
-rqr decode hello.png
 ```
 
-## 📖 详细说明
+## Command Reference
 
-### Encode 命令参数
+### `encode` Options
 
-| 参数                 | 短参数 | 默认值   | 描述                     |
-| -------------------- | ------ | -------- | ------------------------ |
-| `--output`           | `-o`   | `qr.png` | 输出文件路径             |
-| `--size`             | `-s`   | `200`    | 二维码尺寸（像素）       |
-| `--error-correction` | `-e`   | `M`      | 错误纠正级别 (L/M/Q/H)   |
-| `--margin`           | `-m`   | `10`     | 边距大小（模块数）       |
-| `--terminal`         | `-t`   | -        | 在终端中显示而非保存文件 |
+| Option | Short | Default | Description |
+|--------|-------|---------|-------------|
+| `--output` | `-o` | `qr.png` | Output file path |
+| `--size` | `-s` | `200` | Image size in pixels |
+| `--error-correction` | `-e` | `M` | Error correction level (L/M/Q/H) |
+| `--margin` | `-m` | `10` | Margin size in modules |
+| `--terminal` | `-t` | - | Display in terminal instead of saving |
 
-### 错误纠正级别
+### Error Correction Levels
 
-- **L (Low)**：约 7% 的错误纠正能力
-- **M (Medium)**：约 15% 的错误纠正能力（默认）
-- **Q (Quartile)**：约 25% 的错误纠正能力
-- **H (High)**：约 30% 的错误纠正能力
+| Level | Recovery Capacity |
+|-------|-------------------|
+| L (Low) | ~7% |
+| M (Medium) | ~15% (default) |
+| Q (Quartile) | ~25% |
+| H (High) | ~30% |
 
-## 🌟 使用示例
+## Examples
 
-### 1. 网址二维码
+### URL QR Code
 
 ```bash
 rqr encode "https://github.com/rust-lang/rust" --output github.png --size 400
 ```
 
-### 2. 联系信息二维码
+### Contact Information
 
 ```bash
-rqr encode "联系人：张三
-电话：138-0000-0000
-邮箱：zhangsan@example.com" --output contact.png
+rqr encode "Name: John Doe
+Phone: 138-0000-0000
+Email: john@example.com" --output contact.png
 ```
 
-### 3. WiFi 连接二维码
+### WiFi Configuration
 
 ```bash
 rqr encode "WIFI:T:WPA;S:MyNetwork;P:password123;;" --output wifi.png
 ```
 
-### 4. 在终端快速预览
+### High-Reliability QR Code
 
 ```bash
-rqr encode "快速测试" --terminal
+rqr encode "Critical data" --error-correction H --output important.png
 ```
 
-### 5. 高容错二维码
+## Development
 
 ```bash
-rqr encode "重要信息" --error-correction H --output important.png
-```
-
-### 6. 从网络解析二维码
-
-```bash
-# 从网络图片直接解析二维码
-rqr encode "网络测试" --output test.png
-rqr decode "https://example.com/test.png"
-```
-
-## 🛠️ 技术栈
-
-- **[clap](https://crates.io/crates/clap)** - 命令行参数解析
-- **[qrcode](https://crates.io/crates/qrcode)** - 二维码生成
-- **[rqrr](https://crates.io/crates/rqrr)** - 二维码识别
-- **[image](https://crates.io/crates/image)** - 图像处理
-- **[thiserror](https://crates.io/crates/thiserror)** - 错误处理
-
-## 🧪 测试
-
-```bash
-# 运行测试
-cargo test
-
-# 生成测试二维码
-cargo run -- encode "测试内容" --output test.png
-
-# 解析测试二维码
-cargo run -- decode test.png
-
-# 从 URL 解析测试二维码
-cargo run -- decode "https://example.com/test.png"
-```
-
-## 🔧 开发
-
-### 本地开发环境
-
-```bash
-# 克隆项目
-git clone <your-repo-url>
-cd rqr
-
-# 安装依赖并编译
+# Build
 cargo build
 
-# 运行开发版本
-cargo run -- encode "开发测试" --terminal
+# Run tests
+cargo test
 
-# 测试解码功能
-cargo run -- decode "test.png"
-cargo run -- decode "https://example.com/qr.png"
+# Run with development build
+cargo run -- encode "Test" --terminal
 ```
 
-### 项目结构
+### Project Structure
 
-```
-rqr/
-├── src/
-│   ├── main.rs         # CLI 工具入口
-│   ├── commands/       # 命令处理模块
-│   │   ├── mod.rs
-│   │   ├── encode.rs   # 编码命令
-│   │   └── decode.rs   # 解码命令
-│   ├── qr/             # 核心 QR 功能（内部模块）
-│   │   ├── mod.rs
-│   │   ├── encoder.rs  # QR 编码器
-│   │   ├── decoder.rs  # QR 解码器
-│   │   └── output.rs   # 输出格式处理
-│   └── utils/          # 工具模块
-│       ├── mod.rs
-│       └── error.rs    # 错误类型定义
-└── tests/              # 单元测试
-```
+See [Architecture.md](doc/Architecture.md) for detailed design documentation.
 
-## 📊 性能
+## Roadmap
 
-- **生成速度**：毫秒级生成小型二维码
-- **内存使用**：低内存占用，适合批量处理
-- **文件大小**：生成的二进制文件约 2-3MB（release 模式）
+- [ ] Custom color themes
+- [ ] Additional output formats (SVG, JPEG)
+- [ ] Batch processing
+- [ ] WebAssembly support
 
-## 🤝 贡献
+## License
 
-欢迎提交 Issue 和 Pull Request！
+MIT License - see [LICENSE](LICENSE) for details.
 
-1. Fork 本项目
-2. 创建功能分支：`git checkout -b feature/amazing-feature`
-3. 提交更改：`git commit -m 'Add some amazing feature'`
-4. 推送到分支：`git push origin feature/amazing-feature`
-5. 提交 Pull Request
+## Acknowledgments
 
-## 📝 TODO
-
-- [x] 压缩可执行文件大小
-- [x] 支持处理图片链接
-- [ ] 自定义颜色主题
-- [ ] Logo 嵌入功能
-- [ ] 更多输出格式（PDF、JPEG 等）
-- [ ] 批量处理功能
-- [ ] WebAssembly 支持
-- [ ] 性能优化和基准测试
-
-## 📄 许可证
-
-本项目基于 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
-
-## 🙏 致谢
-
-- [qrcode-rust](https://github.com/kennytm/qrcode-rust) - 优秀的 QR 码生成库
-- [rqrr](https://github.com/WanzenBug/rqrr) - 高效的 QR 码识别库
-- [clap](https://github.com/clap-rs/clap) - 强大的命令行参数解析库
-
----
-
-**如果这个项目对你有帮助，请给它一个 ⭐！**
+- [clap](https://crates.io/crates/clap) - Command-line argument parsing
+- [qrcode](https://crates.io/crates/qrcode) - QR code generation
+- [rqrr](https://crates.io/crates/rqrr) - QR code recognition
+- [image](https://crates.io/crates/image) - Image processing
+- [reqwest](https://crates.io/crates/reqwest) - HTTP client

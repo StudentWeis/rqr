@@ -7,11 +7,10 @@ mod commands;
 mod qr;
 mod utils;
 
-use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
-use commands::decode::run as decode;
-use commands::encode::run as encode;
+use clap::{Parser, Subcommand};
+use commands::{decode::run as decode, encode::run as encode};
 use utils::error::Result;
 
 /// Main CLI structure for the rqr tool

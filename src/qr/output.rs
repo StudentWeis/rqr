@@ -1,5 +1,6 @@
-use crate::utils::error::{Result, RqrError};
 use std::path::Path;
+
+use crate::utils::error::{Result, RqrError};
 
 /// Output format options for QR code rendering
 ///
@@ -55,8 +56,9 @@ impl OutputFormat {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::path::PathBuf;
+
+    use super::*;
 
     #[test]
     fn test_output_format_from_path_png() {

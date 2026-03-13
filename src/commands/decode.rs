@@ -1,6 +1,6 @@
-use crate::qr::decoder::QrDecoder;
-use crate::utils::error::Result;
 use std::path::PathBuf;
+
+use crate::{qr::decoder::QrDecoder, utils::error::Result};
 
 /// Run the decode command to extract text from a QR code image
 ///
@@ -54,10 +54,12 @@ pub fn run(input: String) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
+    use std::path::Path;
+
+    use tempfile::TempDir;
+
     use super::*;
     use crate::qr::encoder::QrEncoder;
-    use std::path::Path;
-    use tempfile::TempDir;
 
     fn create_test_qr_file(path: &Path, content: &str) {
         let encoder = QrEncoder::new(200, 10, "M").unwrap();

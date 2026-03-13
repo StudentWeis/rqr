@@ -2,9 +2,10 @@
 //!
 //! Tests the complete encode-decode workflow and CLI functionality.
 
+use std::fs;
+
 use assert_cmd::Command;
 use predicates::prelude::*;
-use std::fs;
 use tempfile::TempDir;
 
 /// Helper function to create a temporary directory for tests

@@ -1,7 +1,9 @@
-use crate::utils::error::{Result, RqrError};
+use std::path::Path;
+
 use image::{DynamicImage, open as open_image};
 use rqrr::PreparedImage;
-use std::path::Path;
+
+use crate::utils::error::{Result, RqrError};
 
 /// QR Code decoder for extracting text from images
 ///
@@ -129,11 +131,13 @@ impl QrDecoder {
 
 #[cfg(test)]
 mod tests {
+    use std::path::Path;
+
+    use image::{DynamicImage, ImageBuffer, Luma};
+    use tempfile::TempDir;
+
     use super::*;
     use crate::qr::encoder::QrEncoder;
-    use image::{DynamicImage, ImageBuffer, Luma};
-    use std::path::Path;
-    use tempfile::TempDir;
 
     fn create_test_qr_image(content: &str, path: &Path) {
         let encoder = QrEncoder::new(200, 10, "M").unwrap();
