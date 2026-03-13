@@ -1,2 +1,3 @@
 date,commit,binary,size_bytes,gzip_bytes,delta_bytes,delta_gzip
 2026-03-13T15:27:08Z,9088d95,target/release/rqr,13634208,5540872,6644336,2819185
+2026-03-13T16:03:25Z,4d0a2b8,target/release/rqr,7864336,3092242,-5769872,-2448630

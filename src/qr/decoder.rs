@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::{path::Path, process::Command};
 
 use image::{DynamicImage, open as open_image};
 use rqrr::PreparedImage;
@@ -31,13 +31,24 @@ impl QrDecoder {
 
     /// Decode QR codes from an image url
     pub fn decode_from_url(&self, url: &str) -> Result<Vec<String>> {
-        let resp = reqwest::blocking::get(url).map_err(|e| {
-            RqrError::DecodingError(format!("Failed to fetch image from URL: {}", e))
-        })?;
-        let bytes = resp.bytes().map_err(|e| {
-            RqrError::DecodingError(format!("Failed to read image bytes from response: {}", e))
-        })?;
-        let img = image::load_from_memory(&bytes)?;
+        let output = Command::new("curl")
+            .args([
+                "-s", // Silent mode
+                "-L", // Follow redirects
+                "-f", // Fail on HTTP error
+                "--max-time",
+                "30",
+                url,
+            ])
+            .output()
+            .map_err(|e| RqrError::DecodingError(format!("Failed to execute curl: {}", e)))?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(RqrError::DecodingError(format!("curl failed: {}", stderr)));
+        }
+
+        let img = image::load_from_memory(&output.stdout)?;
         self.decode_from_image(img)
     }
 
