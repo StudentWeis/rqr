@@ -24,7 +24,7 @@ use std::path::PathBuf;
 /// # Examples
 /// ```rust,no_run
 /// use std::path::PathBuf;
-/// use rqr::commands::encode::run;
+/// use crate::commands::encode::run;
 ///
 /// run(
 ///     "Hello World".to_string(),
@@ -34,7 +34,7 @@ use std::path::PathBuf;
 ///     10,
 ///     false
 /// )?;
-/// # Ok::<(), rqr::RqrError>(())
+/// # Ok::<(), crate::utils::error::RqrError>(())
 /// ```
 pub fn run(
     content: String,
@@ -74,4 +74,268 @@ pub fn run(
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::TempDir;
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_basic() {
+        let temp_dir = TempDir::new().unwrap();
+        let output_path = temp_dir.path().join("output.png");
+
+        let result = run(
+            "Test content".to_string(),
+            output_path.clone(),
+            200,
+            "M".to_string(),
+            10,
+            false,
+        );
+
+        assert!(result.is_ok());
+        assert!(output_path.exists());
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_different_sizes() {
+        let temp_dir = TempDir::new().unwrap();
+
+        for size in [100, 200, 400] {
+            let output_path = temp_dir.path().join(format!("size_{}.png", size));
+
+            let result = run(
+                "Size test".to_string(),
+                output_path.clone(),
+                size,
+                "M".to_string(),
+                10,
+                false,
+            );
+
+            assert!(result.is_ok(), "Failed with size {}", size);
+            assert!(output_path.exists());
+        }
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_different_error_correction() {
+        let temp_dir = TempDir::new().unwrap();
+
+        for level in ["L", "M", "Q", "H"] {
+            let output_path = temp_dir.path().join(format!("ec_{}.png", level));
+
+            let result = run(
+                "EC test".to_string(),
+                output_path.clone(),
+                200,
+                level.to_string(),
+                10,
+                false,
+            );
+
+            assert!(result.is_ok(), "Failed with level {}", level);
+            assert!(output_path.exists());
+        }
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_different_margins() {
+        let temp_dir = TempDir::new().unwrap();
+
+        for margin in [0, 5, 10, 20] {
+            let output_path = temp_dir.path().join(format!("margin_{}.png", margin));
+
+            let result = run(
+                "Margin test".to_string(),
+                output_path.clone(),
+                200,
+                "M".to_string(),
+                margin,
+                false,
+            );
+
+            assert!(result.is_ok(), "Failed with margin {}", margin);
+        }
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_empty_content() {
+        let temp_dir = TempDir::new().unwrap();
+        let output_path = temp_dir.path().join("empty.png");
+
+        let result = run(
+            "".to_string(),
+            output_path.clone(),
+            200,
+            "M".to_string(),
+            10,
+            false,
+        );
+
+        assert!(result.is_ok());
+        assert!(output_path.exists());
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_unicode_content() {
+        let temp_dir = TempDir::new().unwrap();
+        let output_path = temp_dir.path().join("unicode.png");
+
+        let result = run(
+            "你好世界 🌍 Привет мир".to_string(),
+            output_path.clone(),
+            200,
+            "M".to_string(),
+            10,
+            false,
+        );
+
+        assert!(result.is_ok());
+        assert!(output_path.exists());
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_long_content() {
+        let temp_dir = TempDir::new().unwrap();
+        let output_path = temp_dir.path().join("long.png");
+
+        let long_content = "a".repeat(500);
+
+        let result = run(
+            long_content,
+            output_path.clone(),
+            400,
+            "M".to_string(),
+            10,
+            false,
+        );
+
+        assert!(result.is_ok());
+        assert!(output_path.exists());
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_invalid_error_correction() {
+        let temp_dir = TempDir::new().unwrap();
+        let output_path = temp_dir.path().join("invalid.png");
+
+        let result = run(
+            "Test".to_string(),
+            output_path.clone(),
+            200,
+            "X".to_string(),
+            10,
+            false,
+        );
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_size_too_small() {
+        let temp_dir = TempDir::new().unwrap();
+        let output_path = temp_dir.path().join("small.png");
+
+        let result = run(
+            "Test".to_string(),
+            output_path.clone(),
+            10,
+            "M".to_string(),
+            10,
+            false,
+        );
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_terminal_mode() {
+        let temp_dir = TempDir::new().unwrap();
+        let output_path = temp_dir.path().join("terminal.png");
+
+        let result = run(
+            "Terminal test".to_string(),
+            output_path.clone(),
+            200,
+            "M".to_string(),
+            10,
+            true,
+        );
+
+        assert!(result.is_ok());
+        assert!(!output_path.exists());
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_nested_output_path() {
+        let temp_dir = TempDir::new().unwrap();
+        let nested_path = temp_dir.path().join("sub").join("dir").join("output.png");
+
+        let result = run(
+            "Test".to_string(),
+            nested_path.clone(),
+            200,
+            "M".to_string(),
+            10,
+            false,
+        );
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_special_chars_in_content() {
+        let temp_dir = TempDir::new().unwrap();
+        let output_path = temp_dir.path().join("special.png");
+
+        let special_content = "!@#$%^&*()_+-=[]{}|;':\",./<>?";
+
+        let result = run(
+            special_content.to_string(),
+            output_path.clone(),
+            200,
+            "M".to_string(),
+            10,
+            false,
+        );
+
+        assert!(result.is_ok());
+        assert!(output_path.exists());
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn test_encode_command_url_content() {
+        let temp_dir = TempDir::new().unwrap();
+        let output_path = temp_dir.path().join("url.png");
+
+        let url = "https://example.com/path?query=value&foo=bar";
+
+        let result = run(
+            url.to_string(),
+            output_path.clone(),
+            200,
+            "M".to_string(),
+            10,
+            false,
+        );
+
+        assert!(result.is_ok());
+        assert!(output_path.exists());
+    }
 }

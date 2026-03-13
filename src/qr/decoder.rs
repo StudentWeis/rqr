@@ -19,7 +19,7 @@ impl QrDecoder {
     ///
     /// # Examples
     /// ```rust
-    /// use rqr::QrDecoder;
+    /// use crate::qr::decoder::QrDecoder;
     ///
     /// let decoder = QrDecoder::new();
     /// ```
@@ -49,14 +49,14 @@ impl QrDecoder {
     ///
     /// # Examples
     /// ```rust,no_run
-    /// use rqr::QrDecoder;
+    /// use crate::qr::decoder::QrDecoder;
     ///
     /// let decoder = QrDecoder::new();
     /// let contents = decoder.decode_from_file("qr_code.png")?;
     /// for content in contents {
     ///     println!("Decoded: {}", content);
     /// }
-    /// # Ok::<(), rqr::RqrError>(())
+    /// # Ok::<(), crate::utils::error::RqrError>(())
     /// ```
     pub fn decode_from_file<P: AsRef<Path>>(&self, path: P) -> Result<Vec<String>> {
         let img = open_image(path)?;
@@ -124,5 +124,185 @@ impl QrDecoder {
         }
 
         Ok(results)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::qr::encoder::QrEncoder;
+    use image::{DynamicImage, ImageBuffer, Luma};
+    use std::path::Path;
+    use tempfile::TempDir;
+
+    fn create_test_qr_image(content: &str, path: &Path) {
+        let encoder = QrEncoder::new(200, 10, "M").unwrap();
+        let qr_code = encoder.encode(content).unwrap();
+        encoder.save_to_file(&qr_code, path).unwrap();
+    }
+
+    fn create_test_qr_image_buffer(content: &str) -> DynamicImage {
+        let encoder = QrEncoder::new(200, 10, "M").unwrap();
+        let qr_code = encoder.encode(content).unwrap();
+        encoder.to_image(&qr_code).unwrap()
+    }
+
+    #[test]
+    fn test_decoder_new() {
+        let _decoder = QrDecoder::new();
+    }
+
+    #[test]
+    fn test_decoder_default() {
+        let _decoder: QrDecoder = Default::default();
+    }
+
+    #[test]
+    fn test_decode_from_file_basic() {
+        let temp_dir = TempDir::new().unwrap();
+        let image_path = temp_dir.path().join("test.png");
+
+        create_test_qr_image("Hello from QR", &image_path);
+
+        let decoder = QrDecoder::new();
+        let results = decoder.decode_from_file(&image_path).unwrap();
+
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0], "Hello from QR");
+    }
+
+    #[test]
+    fn test_decode_from_file_empty_content() {
+        let temp_dir = TempDir::new().unwrap();
+        let image_path = temp_dir.path().join("empty.png");
+
+        create_test_qr_image("", &image_path);
+
+        let decoder = QrDecoder::new();
+        let results = decoder.decode_from_file(&image_path).unwrap();
+
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0], "");
+    }
+
+    #[test]
+    fn test_decode_from_file_unicode() {
+        let temp_dir = TempDir::new().unwrap();
+        let image_path = temp_dir.path().join("unicode.png");
+
+        let content = "你好世界 🌍 Привет мир";
+        create_test_qr_image(content, &image_path);
+
+        let decoder = QrDecoder::new();
+        let results = decoder.decode_from_file(&image_path).unwrap();
+
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0], content);
+    }
+
+    #[test]
+    fn test_decode_from_file_url() {
+        let temp_dir = TempDir::new().unwrap();
+        let image_path = temp_dir.path().join("url.png");
+
+        let url = "https://example.com/path?query=value&foo=bar";
+        create_test_qr_image(url, &image_path);
+
+        let decoder = QrDecoder::new();
+        let results = decoder.decode_from_file(&image_path).unwrap();
+
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0], url);
+    }
+
+    #[test]
+    fn test_decode_from_file_long_text() {
+        let temp_dir = TempDir::new().unwrap();
+        let image_path = temp_dir.path().join("long.png");
+
+        let long_text = "a".repeat(200);
+        create_test_qr_image(&long_text, &image_path);
+
+        let decoder = QrDecoder::new();
+        let results = decoder.decode_from_file(&image_path).unwrap();
+
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0], long_text);
+    }
+
+    #[test]
+    fn test_decode_from_file_not_found() {
+        let decoder = QrDecoder::new();
+        let result = decoder.decode_from_file("/nonexistent/path/qr.png");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_decode_from_image_basic() {
+        let image = create_test_qr_image_buffer("Test from buffer");
+
+        let decoder = QrDecoder::new();
+        let results = decoder.decode_from_image(image).unwrap();
+
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0], "Test from buffer");
+    }
+
+    #[test]
+    fn test_decode_from_image_no_qr() {
+        let blank_image =
+            DynamicImage::ImageLuma8(ImageBuffer::from_pixel(100, 100, Luma([255u8])));
+
+        let decoder = QrDecoder::new();
+        let result = decoder.decode_from_image(blank_image);
+
+        assert!(result.is_err());
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("No QR codes found"));
+    }
+
+    #[test]
+    fn test_decode_from_file_special_chars() {
+        let temp_dir = TempDir::new().unwrap();
+        let image_path = temp_dir.path().join("special.png");
+
+        let special = "!@#$%^&*()_+-=[]{}|;':\",./<>?";
+        create_test_qr_image(special, &image_path);
+
+        let decoder = QrDecoder::new();
+        let results = decoder.decode_from_file(&image_path).unwrap();
+
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0], special);
+    }
+
+    #[test]
+    fn test_decode_from_image_different_sizes() {
+        for size in [100, 200, 400] {
+            let encoder = QrEncoder::new(size, 10, "M").unwrap();
+            let qr_code = encoder.encode("Size variation").unwrap();
+            let image = encoder.to_image(&qr_code).unwrap();
+
+            let decoder = QrDecoder::new();
+            let results = decoder.decode_from_image(image).unwrap();
+
+            assert_eq!(results.len(), 1);
+            assert_eq!(results[0], "Size variation");
+        }
+    }
+
+    #[test]
+    fn test_decode_from_image_different_error_correction() {
+        for level in ["L", "M", "Q", "H"] {
+            let encoder = QrEncoder::new(200, 10, level).unwrap();
+            let qr_code = encoder.encode("EC test").unwrap();
+            let image = encoder.to_image(&qr_code).unwrap();
+
+            let decoder = QrDecoder::new();
+            let results = decoder.decode_from_image(image).unwrap();
+
+            assert_eq!(results.len(), 1);
+            assert_eq!(results[0], "EC test");
+        }
     }
 }

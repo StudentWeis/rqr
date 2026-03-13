@@ -1,17 +1,15 @@
-# rqr - QR Code CLI Tool & Library
+# rqr - QR Code CLI Tool
 
 [![Rust](https://img.shields.io/badge/language-Rust-orange.svg)](https://www.rust-lang.org) [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
 
-一个简洁、快速的二维码生成和解析工具，同时提供 Rust 库供其他项目使用。
+一个简洁、快速的二维码生成和解析命令行工具。
 
 # ✨ 特性
 
-- **双重用途**：既是命令行工具，也是 Rust 库
 - **功能完善**：支持二维码生成与解析，多种图片格式
 - **终端显示**：可以直接在终端中显示二维码
 - **网络支持**：支持从 URL 直接解析二维码
 - **高度可定制**：自定义尺寸、错误纠正级别、边距等参数
-- **库 API**：提供简洁的库接口，易于集成
 
 # 安装
 
@@ -28,17 +26,6 @@ cargo build --release
 # 安装到系统路径（可选）
 cargo install --path .
 ```
-
-## 作为依赖使用
-
-在你的 `Cargo.toml` 中添加：
-
-```toml
-[dependencies]
-rqr = { git = "https://github.com/StudentWeis/rqr" }
-```
-
-## 从脚本安装
 
 ## 🚀 使用方法
 
@@ -72,57 +59,6 @@ rqr decode "https://example.com/qr-code.png"
 
 # 解析刚生成的二维码
 rqr decode hello.png
-```
-
-### Rust 库使用
-
-#### 基本用法
-
-```rust
-use rqr::{encode, decode, Result};
-
-fn main() -> Result<()> {
-    // 生成二维码并保存为文件
-    encode(
-        "Hello, World!".to_string(),
-        "hello.png".into(),
-        200,
-        "M".to_string(),
-        10,
-        false
-    )?;
-
-    // 从文件解析二维码
-    decode("hello.png".to_string())?;
-
-    // 从 URL 解析二维码
-    decode("https://example.com/qr-code.png".to_string())?;
-
-    Ok(())
-}
-```
-
-#### 高级用法
-
-```rust
-use rqr::{encode, decode, Result};
-
-fn main() -> Result<()> {
-    // 生成终端显示的二维码
-    encode(
-        "Terminal QR".to_string(),
-        "dummy.png".into(), // 不会实际保存
-        200,
-        "H".to_string(),    // 高错误纠正
-        5,
-        true                // 终端显示
-    )?;
-
-    // 解析多个二维码
-    decode("multi_qr.png".to_string())?;
-
-    Ok(())
-}
 ```
 
 ## 📖 详细说明
@@ -235,7 +171,6 @@ cargo run -- decode "https://example.com/qr.png"
 ```
 rqr/
 ├── src/
-│   ├── lib.rs          # 库入口，公开 API
 │   ├── main.rs         # CLI 工具入口
 │   ├── commands/       # 命令处理模块
 │   │   ├── mod.rs
@@ -249,7 +184,6 @@ rqr/
 │   └── utils/          # 工具模块
 │       ├── mod.rs
 │       └── error.rs    # 错误类型定义
-├── examples/           # 使用示例
 └── tests/              # 单元测试
 ```
 

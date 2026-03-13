@@ -1,12 +1,18 @@
 //! # rqr - QR Code CLI Tool
 //!
-//! Command-line interface for the rqr QR code library.
+//! Command-line interface for the rqr QR code tool.
 //! Provides easy-to-use commands for encoding and decoding QR codes.
+
+mod commands;
+mod qr;
+mod utils;
 
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 
-use rqr::{Result, decode, encode};
+use commands::decode::run as decode;
+use commands::encode::run as encode;
+use utils::error::Result;
 
 /// Main CLI structure for the rqr tool
 #[derive(Parser)]
