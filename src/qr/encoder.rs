@@ -29,10 +29,10 @@ impl QrEncoder {
     ///
     /// # Examples
     /// ```rust
-    /// use rqr::QrEncoder;
+    /// use rqr::qr::encoder::QrEncoder;
     ///
     /// let encoder = QrEncoder::new(200, 10, "M")?;
-    /// # Ok::<(), rqr::RqrError>(())
+    /// # Ok::<(), rqr::utils::error::RqrError>(())
     /// ```
     pub fn new(size: u32, margin: u32, error_correction: &str) -> Result<Self> {
         let ec_level = match error_correction.to_uppercase().as_str() {
@@ -64,11 +64,11 @@ impl QrEncoder {
     ///
     /// # Examples
     /// ```rust
-    /// use crate::qr::encoder::QrEncoder;
+    /// use rqr::qr::encoder::QrEncoder;
     ///
     /// let encoder = QrEncoder::new(200, 10, "M")?;
     /// let qr_code = encoder.encode("Hello, World!")?;
-    /// # Ok::<(), crate::utils::error::RqrError>(())
+    /// # Ok::<(), rqr::utils::error::RqrError>(())
     /// ```
     pub fn encode(&self, content: &str) -> Result<QrCode> {
         QrCode::with_error_correction_level(content, self.error_correction)

@@ -26,7 +26,7 @@ use crate::{
 /// # Examples
 /// ```rust,no_run
 /// use std::path::PathBuf;
-/// use crate::commands::encode::run;
+/// use rqr::commands::encode::run;
 ///
 /// run(
 ///     "Hello World".to_string(),
@@ -36,7 +36,7 @@ use crate::{
 ///     10,
 ///     false
 /// )?;
-/// # Ok::<(), crate::utils::error::RqrError>(())
+/// # Ok::<(), rqr::utils::error::RqrError>(())
 /// ```
 pub fn run(
     content: String,
@@ -80,15 +80,14 @@ pub fn run(
 
 #[cfg(test)]
 mod tests {
-    use tempfile::TempDir;
-
     use super::*;
+    use crate::utils::test_utils::temp_dir;
 
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_basic() {
-        let temp_dir = TempDir::new().unwrap();
-        let output_path = temp_dir.path().join("output.png");
+        let temp = temp_dir();
+        let output_path = temp.path().join("output.png");
 
         let result = run(
             "Test content".to_string(),
@@ -106,10 +105,10 @@ mod tests {
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_different_sizes() {
-        let temp_dir = TempDir::new().unwrap();
+        let temp = temp_dir();
 
         for size in [100, 200, 400] {
-            let output_path = temp_dir.path().join(format!("size_{}.png", size));
+            let output_path = temp.path().join(format!("size_{}.png", size));
 
             let result = run(
                 "Size test".to_string(),
@@ -128,10 +127,10 @@ mod tests {
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_different_error_correction() {
-        let temp_dir = TempDir::new().unwrap();
+        let temp = temp_dir();
 
         for level in ["L", "M", "Q", "H"] {
-            let output_path = temp_dir.path().join(format!("ec_{}.png", level));
+            let output_path = temp.path().join(format!("ec_{}.png", level));
 
             let result = run(
                 "EC test".to_string(),
@@ -150,10 +149,10 @@ mod tests {
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_different_margins() {
-        let temp_dir = TempDir::new().unwrap();
+        let temp = temp_dir();
 
         for margin in [0, 5, 10, 20] {
-            let output_path = temp_dir.path().join(format!("margin_{}.png", margin));
+            let output_path = temp.path().join(format!("margin_{}.png", margin));
 
             let result = run(
                 "Margin test".to_string(),
@@ -171,8 +170,8 @@ mod tests {
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_empty_content() {
-        let temp_dir = TempDir::new().unwrap();
-        let output_path = temp_dir.path().join("empty.png");
+        let temp = temp_dir();
+        let output_path = temp.path().join("empty.png");
 
         let result = run(
             "".to_string(),
@@ -190,8 +189,8 @@ mod tests {
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_unicode_content() {
-        let temp_dir = TempDir::new().unwrap();
-        let output_path = temp_dir.path().join("unicode.png");
+        let temp = temp_dir();
+        let output_path = temp.path().join("unicode.png");
 
         let result = run(
             "你好世界 🌍 Привет мир".to_string(),
@@ -209,8 +208,8 @@ mod tests {
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_long_content() {
-        let temp_dir = TempDir::new().unwrap();
-        let output_path = temp_dir.path().join("long.png");
+        let temp = temp_dir();
+        let output_path = temp.path().join("long.png");
 
         let long_content = "a".repeat(500);
 
@@ -230,8 +229,8 @@ mod tests {
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_invalid_error_correction() {
-        let temp_dir = TempDir::new().unwrap();
-        let output_path = temp_dir.path().join("invalid.png");
+        let temp = temp_dir();
+        let output_path = temp.path().join("invalid.png");
 
         let result = run(
             "Test".to_string(),
@@ -248,8 +247,8 @@ mod tests {
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_size_too_small() {
-        let temp_dir = TempDir::new().unwrap();
-        let output_path = temp_dir.path().join("small.png");
+        let temp = temp_dir();
+        let output_path = temp.path().join("small.png");
 
         let result = run(
             "Test".to_string(),
@@ -266,8 +265,8 @@ mod tests {
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_terminal_mode() {
-        let temp_dir = TempDir::new().unwrap();
-        let output_path = temp_dir.path().join("terminal.png");
+        let temp = temp_dir();
+        let output_path = temp.path().join("terminal.png");
 
         let result = run(
             "Terminal test".to_string(),
@@ -285,8 +284,8 @@ mod tests {
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_nested_output_path() {
-        let temp_dir = TempDir::new().unwrap();
-        let nested_path = temp_dir.path().join("sub").join("dir").join("output.png");
+        let temp = temp_dir();
+        let nested_path = temp.path().join("sub").join("dir").join("output.png");
 
         let result = run(
             "Test".to_string(),
@@ -303,8 +302,8 @@ mod tests {
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_special_chars_in_content() {
-        let temp_dir = TempDir::new().unwrap();
-        let output_path = temp_dir.path().join("special.png");
+        let temp = temp_dir();
+        let output_path = temp.path().join("special.png");
 
         let special_content = "!@#$%^&*()_+-=[]{}|;':\",./<>?";
 
@@ -324,8 +323,8 @@ mod tests {
     #[test]
     #[allow(clippy::unwrap_used)]
     fn test_encode_command_url_content() {
-        let temp_dir = TempDir::new().unwrap();
-        let output_path = temp_dir.path().join("url.png");
+        let temp = temp_dir();
+        let output_path = temp.path().join("url.png");
 
         let url = "https://example.com/path?query=value&foo=bar";
 

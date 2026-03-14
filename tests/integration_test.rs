@@ -4,22 +4,14 @@
 
 use std::fs;
 
-use assert_cmd::Command;
 use predicates::prelude::*;
-use tempfile::TempDir;
 
-/// Helper function to create a temporary directory for tests
-fn temp_dir() -> TempDir {
-    TempDir::new().unwrap()
-}
+mod common;
 
-/// Helper function to get the binary command
-fn cmd() -> Command {
-    Command::cargo_bin("rqr").unwrap()
-}
+use common::{cmd, create_qr_image_file, fixtures, temp_dir};
 
 #[test]
-fn test_cli_encode_help() {
+fn should_display_encode_help_successfully() {
     let mut command = cmd();
     command.arg("encode").arg("--help");
     command
@@ -29,7 +21,7 @@ fn test_cli_encode_help() {
 }
 
 #[test]
-fn test_cli_decode_help() {
+fn should_display_decode_help_successfully() {
     let mut command = cmd();
     command.arg("decode").arg("--help");
     command
@@ -39,7 +31,7 @@ fn test_cli_decode_help() {
 }
 
 #[test]
-fn test_cli_main_help() {
+fn should_display_main_help_successfully() {
     let mut command = cmd();
     command.arg("--help");
     command
@@ -49,7 +41,7 @@ fn test_cli_main_help() {
 }
 
 #[test]
-fn test_cli_version() {
+fn should_display_version_successfully() {
     let mut command = cmd();
     command.arg("--version");
     command
@@ -59,7 +51,7 @@ fn test_cli_version() {
 }
 
 #[test]
-fn test_encode_decode_roundtrip() {
+fn should_complete_encode_decode_roundtrip() {
     let temp_dir = temp_dir();
     let output_path = temp_dir.path().join("roundtrip.png");
 
@@ -84,7 +76,7 @@ fn test_encode_decode_roundtrip() {
 }
 
 #[test]
-fn test_encode_with_custom_size() {
+fn should_encode_with_custom_size() {
     let temp_dir = temp_dir();
     let output_path = temp_dir.path().join("custom_size.png");
 
@@ -106,7 +98,7 @@ fn test_encode_with_custom_size() {
 }
 
 #[test]
-fn test_encode_with_all_options() {
+fn should_encode_with_all_options() {
     let temp_dir = temp_dir();
     let output_path = temp_dir.path().join("all_options.png");
 
@@ -128,7 +120,7 @@ fn test_encode_with_all_options() {
 }
 
 #[test]
-fn test_encode_all_error_correction_levels() {
+fn should_encode_all_error_correction_levels() {
     let temp_dir = temp_dir();
 
     for level in ["L", "M", "Q", "H"] {
@@ -149,7 +141,7 @@ fn test_encode_all_error_correction_levels() {
 }
 
 #[test]
-fn test_encode_terminal_output() {
+fn should_output_to_terminal() {
     let mut command = cmd();
     command.arg("encode").arg("Terminal output test").arg("-t");
 
@@ -160,7 +152,7 @@ fn test_encode_terminal_output() {
 }
 
 #[test]
-fn test_encode_invalid_error_correction() {
+fn should_fail_with_invalid_error_correction() {
     let temp_dir = temp_dir();
     let output_path = temp_dir.path().join("invalid.png");
 
@@ -177,7 +169,7 @@ fn test_encode_invalid_error_correction() {
 }
 
 #[test]
-fn test_decode_file_not_found() {
+fn should_fail_when_file_not_found() {
     let mut command = cmd();
     command.arg("decode").arg("/nonexistent/path/file.png");
 
@@ -185,7 +177,7 @@ fn test_decode_file_not_found() {
 }
 
 #[test]
-fn test_decode_invalid_file() {
+fn should_fail_with_invalid_image_file() {
     let temp_dir = temp_dir();
     let invalid_file = temp_dir.path().join("not_an_image.txt");
     fs::write(&invalid_file, "This is not an image").unwrap();
@@ -197,17 +189,15 @@ fn test_decode_invalid_file() {
 }
 
 #[test]
-fn test_encode_unicode_content() {
+fn should_encode_unicode_content() {
     let temp_dir = temp_dir();
     let output_path = temp_dir.path().join("unicode.png");
 
-    let content = "你好世界 🌍 Привет мир";
-
     // Encode
     let mut encode_cmd = cmd();
     encode_cmd
         .arg("encode")
-        .arg(content)
+        .arg(fixtures::UNICODE_CONTENT)
         .arg("-o")
         .arg(&output_path);
     encode_cmd.assert().success();
@@ -218,21 +208,19 @@ fn test_encode_unicode_content() {
     decode_cmd
         .assert()
         .success()
-        .stdout(predicate::str::contains(content));
+        .stdout(predicate::str::contains(fixtures::UNICODE_CONTENT));
 }
 
 #[test]
-fn test_encode_url_content() {
+fn should_encode_url_content() {
     let temp_dir = temp_dir();
     let output_path = temp_dir.path().join("url.png");
 
-    let url = "https://example.com/path?query=value&foo=bar";
-
     // Encode
     let mut encode_cmd = cmd();
     encode_cmd
         .arg("encode")
-        .arg(url)
+        .arg(fixtures::URL_CONTENT)
         .arg("-o")
         .arg(&output_path);
     encode_cmd.assert().success();
@@ -243,11 +231,11 @@ fn test_encode_url_content() {
     decode_cmd
         .assert()
         .success()
-        .stdout(predicate::str::contains(url));
+        .stdout(predicate::str::contains(fixtures::URL_CONTENT));
 }
 
 #[test]
-fn test_encode_long_content() {
+fn should_encode_long_content() {
     let temp_dir = temp_dir();
     let output_path = temp_dir.path().join("long.png");
 
@@ -267,17 +255,15 @@ fn test_encode_long_content() {
 }
 
 #[test]
-fn test_encode_special_characters() {
+fn should_encode_special_characters() {
     let temp_dir = temp_dir();
     let output_path = temp_dir.path().join("special.png");
-
-    let special = "!@#$%^&*()_+-=[]{}|;':\",./<>?";
 
     // Encode
     let mut encode_cmd = cmd();
     encode_cmd
         .arg("encode")
-        .arg(special)
+        .arg(fixtures::SPECIAL_CHARS)
         .arg("-o")
         .arg(&output_path);
     encode_cmd.assert().success();
@@ -288,11 +274,11 @@ fn test_encode_special_characters() {
     decode_cmd
         .assert()
         .success()
-        .stdout(predicate::str::contains(special));
+        .stdout(predicate::str::contains(fixtures::SPECIAL_CHARS));
 }
 
 #[test]
-fn test_encode_empty_content() {
+fn should_encode_empty_content() {
     let temp_dir = temp_dir();
     let output_path = temp_dir.path().join("empty.png");
 
@@ -304,7 +290,7 @@ fn test_encode_empty_content() {
 }
 
 #[test]
-fn test_multiple_encode_decode_cycles() {
+fn should_complete_multiple_encode_decode_cycles() {
     let temp_dir = temp_dir();
 
     for i in 0..5 {
@@ -331,7 +317,7 @@ fn test_multiple_encode_decode_cycles() {
 }
 
 #[test]
-fn test_encode_different_margins() {
+fn should_encode_different_margins() {
     let temp_dir = temp_dir();
 
     for margin in [0, 5, 10, 20] {
@@ -352,7 +338,7 @@ fn test_encode_different_margins() {
 }
 
 #[test]
-fn test_decode_no_qr_code() {
+fn should_fail_when_no_qr_code_in_image() {
     let temp_dir = temp_dir();
     let blank_image = temp_dir.path().join("blank.png");
 
@@ -367,7 +353,7 @@ fn test_decode_no_qr_code() {
 }
 
 #[test]
-fn test_encode_overwrite_existing_file() {
+fn should_overwrite_existing_file() {
     let temp_dir = temp_dir();
     let output_path = temp_dir.path().join("overwrite.png");
 
@@ -408,13 +394,13 @@ fn test_encode_overwrite_existing_file() {
 }
 
 #[test]
-fn test_cli_missing_subcommand() {
+fn should_fail_when_missing_subcommand() {
     let mut command = cmd();
     command.assert().failure();
 }
 
 #[test]
-fn test_encode_with_relative_path() {
+fn should_encode_with_relative_path() {
     let temp_dir = temp_dir();
     let original_dir = std::env::current_dir().unwrap();
 
@@ -436,19 +422,13 @@ fn test_encode_with_relative_path() {
 }
 
 #[test]
-fn test_decode_with_relative_path() {
+fn should_decode_with_relative_path() {
     let temp_dir = temp_dir();
     let original_dir = std::env::current_dir().unwrap();
 
     // Create QR code
     let output_path = temp_dir.path().join("for_decode.png");
-    let mut encode_cmd = cmd();
-    encode_cmd
-        .arg("encode")
-        .arg("Decode relative")
-        .arg("-o")
-        .arg(&output_path);
-    encode_cmd.assert().success();
+    create_qr_image_file(&output_path, "Decode relative");
 
     // Change to temp directory
     std::env::set_current_dir(&temp_dir).unwrap();
@@ -466,16 +446,14 @@ fn test_decode_with_relative_path() {
 }
 
 #[test]
-fn test_encode_multiline_content() {
+fn should_encode_multiline_content() {
     let temp_dir = temp_dir();
     let output_path = temp_dir.path().join("multiline.png");
-
-    let content = "Line 1\nLine 2\nLine 3";
 
     let mut command = cmd();
     command
         .arg("encode")
-        .arg(content)
+        .arg(fixtures::MULTILINE_CONTENT)
         .arg("-o")
         .arg(&output_path);
     command.assert().success();
@@ -490,16 +468,14 @@ fn test_encode_multiline_content() {
 }
 
 #[test]
-fn test_encode_with_tabs() {
+fn should_encode_content_with_tabs() {
     let temp_dir = temp_dir();
     let output_path = temp_dir.path().join("tabs.png");
-
-    let content = "Column1\tColumn2\tColumn3";
 
     let mut command = cmd();
     command
         .arg("encode")
-        .arg(content)
+        .arg(fixtures::TAB_CONTENT)
         .arg("-o")
         .arg(&output_path);
     command.assert().success();

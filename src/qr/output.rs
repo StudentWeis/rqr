@@ -27,11 +27,11 @@ impl OutputFormat {
     /// # Examples
     /// ```rust
     /// use std::path::Path;
-    /// use rqr::OutputFormat;
+    /// use rqr::qr::output::OutputFormat;
     ///
     /// let format = OutputFormat::from_path("image.png")?;
     /// assert!(matches!(format, OutputFormat::Png));
-    /// # Ok::<(), rqr::RqrError>(())
+    /// # Ok::<(), rqr::utils::error::RqrError>(())
     /// ```
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Self> {
         let path = path.as_ref();

@@ -21,7 +21,7 @@ impl QrDecoder {
     ///
     /// # Examples
     /// ```rust
-    /// use crate::qr::decoder::QrDecoder;
+    /// use rqr::qr::decoder::QrDecoder;
     ///
     /// let decoder = QrDecoder::new();
     /// ```
@@ -62,14 +62,14 @@ impl QrDecoder {
     ///
     /// # Examples
     /// ```rust,no_run
-    /// use crate::qr::decoder::QrDecoder;
+    /// use rqr::qr::decoder::QrDecoder;
     ///
     /// let decoder = QrDecoder::new();
     /// let contents = decoder.decode_from_file("qr_code.png")?;
     /// for content in contents {
     ///     println!("Decoded: {}", content);
     /// }
-    /// # Ok::<(), crate::utils::error::RqrError>(())
+    /// # Ok::<(), rqr::utils::error::RqrError>(())
     /// ```
     pub fn decode_from_file<P: AsRef<Path>>(&self, path: P) -> Result<Vec<String>> {
         let img = open_image(path)?;
@@ -110,7 +110,7 @@ impl QrDecoder {
 
         for grid in grids {
             match grid.decode() {
-                Ok((meta, content)) => {
+                Ok((_meta, content)) => {
                     let content_str = match std::str::from_utf8(content.as_bytes()) {
                         Ok(s) => s.to_string(),
                         Err(_) => {
@@ -119,9 +119,6 @@ impl QrDecoder {
                         }
                     };
                     results.push(content_str);
-
-                    // Print metadata for debugging if needed
-                    eprintln!("QR Code metadata: {:?}", meta);
                 }
                 Err(e) => {
                     eprintln!("Failed to decode QR code: {:?}", e);
@@ -150,12 +147,14 @@ mod tests {
     use super::*;
     use crate::qr::encoder::QrEncoder;
 
+    /// Helper: Create a test QR image file
     fn create_test_qr_image(content: &str, path: &Path) {
         let encoder = QrEncoder::new(200, 10, "M").unwrap();
         let qr_code = encoder.encode(content).unwrap();
         encoder.save_to_file(&qr_code, path).unwrap();
     }
 
+    /// Helper: Create a test QR image buffer
     fn create_test_qr_image_buffer(content: &str) -> DynamicImage {
         let encoder = QrEncoder::new(200, 10, "M").unwrap();
         let qr_code = encoder.encode(content).unwrap();
